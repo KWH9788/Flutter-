@@ -26,16 +26,7 @@ class HomeScreen extends StatelessWidget {
         // snapshot: future의 상태를 담고있는 매개변수
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return ListView.separated(
-              itemCount: snapshot.data!.length,
-              itemBuilder: (context, index) {
-                var item = snapshot.data![index];
-                return Text(item.title);
-              },
-              separatorBuilder: (context, index) => const SizedBox(
-                height: 10,
-              ),
-            );
+            return makeList(snapshot);
           } else if (snapshot.hasError) {
             return const Text("Error!");
           } else {
@@ -44,6 +35,24 @@ class HomeScreen extends StatelessWidget {
             );
           }
         },
+      ),
+    );
+  }
+
+  ListView makeList(AsyncSnapshot<List<WebtoonModel>> snapshot) {
+    return ListView.separated(
+      itemCount: snapshot.data!.length,
+      itemBuilder: (context, index) {
+        var item = snapshot.data![index];
+        return Column(
+          children: [
+            Image.network(item.thumb),
+            Text(item.title),
+          ],
+        );
+      },
+      separatorBuilder: (context, index) => const SizedBox(
+        height: 50,
       ),
     );
   }
