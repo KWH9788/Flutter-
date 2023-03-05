@@ -26,7 +26,14 @@ class HomeScreen extends StatelessWidget {
         // snapshot: future의 상태를 담고있는 매개변수
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return makeList(snapshot);
+            return Column(
+              children: [
+                const SizedBox(
+                  height: 50,
+                ),
+                Expanded(child: makeList(snapshot)),
+              ],
+            );
           } else if (snapshot.hasError) {
             return const Text("Error!");
           } else {
