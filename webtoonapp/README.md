@@ -7,4 +7,4 @@
 자세히 보기 (개발중)
 
 ## Link
-https://kwh9788.github.io/Flutter-study/webtoonapp/web/#/
+- [Today's Webtoon](https://kwh9788.github.io/Flutter-study/webtoonapp/web/#/)
