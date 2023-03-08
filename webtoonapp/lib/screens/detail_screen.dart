@@ -32,69 +32,87 @@ class DetailScreen extends StatelessWidget {
         ),
         elevation: 1,
       ),
-      body: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 25,
+            vertical: 30,
+          ),
+          child: Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 20),
-                child: Hero(
-                  tag: id,
-                  child: Container(
-                    width: 300,
-                    clipBehavior: Clip.hardEdge,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: [
-                          BoxShadow(
-                            blurRadius: 1.0,
-                            offset: const Offset(3, 3),
-                            color: Colors.black.withOpacity(0.2),
-                          )
-                        ]),
-                    child: Image.network(thumb),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 20),
+                    child: Hero(
+                      tag: id,
+                      child: Container(
+                        width: 250,
+                        clipBehavior: Clip.hardEdge,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            boxShadow: [
+                              BoxShadow(
+                                blurRadius: 1.0,
+                                offset: const Offset(3, 3),
+                                color: Colors.black.withOpacity(0.2),
+                              )
+                            ]),
+                        child: Image.network(thumb),
+                      ),
+                    ),
                   ),
-                ),
+                ],
+              ),
+              FutureBuilder(
+                future: webtoon,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return Column(
+                      children: [
+                        Text(
+                          "${snapshot.data!.genre} / ${snapshot.data!.age}",
+                          style: const TextStyle(
+                            fontSize: 16,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 15,
+                        ),
+                        Text(
+                          snapshot.data!.about,
+                          style: const TextStyle(
+                            fontSize: 16,
+                          ),
+                        ),
+                      ],
+                    );
+                  } else if (snapshot.hasError) {
+                    return const Text("Error!");
+                  } else {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                },
+              ),
+              const SizedBox(
+                height: 15,
+              ),
+              FutureBuilder(
+                future: episodes,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return makeList(snapshot);
+                  } else {
+                    return Container();
+                  }
+                },
               ),
             ],
           ),
-          FutureBuilder(
-            future: webtoon,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                var item = snapshot.data;
-                return Column(
-                  children: [
-                    Text(item!.age),
-                    Text(item.genre),
-                    Text(item.about),
-                  ],
-                );
-              } else if (snapshot.hasError) {
-                return const Text("Error!");
-              } else {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-            },
-          ),
-          // FutureBuilder(
-          //   future: episodes,
-          //   builder: (context, snapshot) {
-          //     if (snapshot.hasData) {
-          //       return Expanded(child: makeList(snapshot));
-          //     } else if (snapshot.hasError) {
-          //       return const Text("Error!");
-          //     } else {
-          //       return const Center(
-          //         child: CircularProgressIndicator(),
-          //       );
-          //     }
-          //   },
-          // ),
-        ],
+        ),
       ),
     );
   }
@@ -102,22 +120,7 @@ class DetailScreen extends StatelessWidget {
   Column makeList(AsyncSnapshot<List<WebtoonEpisodeModel>> snapshot) {
     return Column(
       children: [
-        ListView.separated(
-          itemCount: snapshot.data!.length,
-          itemBuilder: (context, index) {
-            var item = snapshot.data![index];
-            return Episode(
-              id: item.id,
-              title: item.title,
-              rating: item.rating,
-              date: item.date,
-              thumb: item.thumb,
-            );
-          },
-          separatorBuilder: (context, index) => const SizedBox(
-            height: 20,
-          ),
-        )
+        for (var episode in snapshot.data!) Episode.init(episode: episode)
       ],
     );
   }
